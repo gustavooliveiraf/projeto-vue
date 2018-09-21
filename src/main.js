@@ -1,14 +1,15 @@
 import Vue from 'vue'
-import App from './App.vue'
+import VueRouter from 'vue-router'
 import VueResource from 'vue-resource';
-import VueRouter from 'vue-router';
-import { routes } from './routes';
+
 import 'bootstrap/dist/css/bootstrap.css';
+import App from './App.vue'
+import { routes }  from './routes'
 
-Vue.use(VueResource);
-Vue.http.options.root = 'http://localhost:3000';
-
+Vue.config.productionTip = false
 Vue.use(VueRouter);
+Vue.use(VueResource);
+Vue.http.options.root = 'http://127.0.0.1:8000';
 
 const router = new VueRouter({ 
   routes, 

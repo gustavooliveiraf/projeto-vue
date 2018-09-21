@@ -1,8 +1,9 @@
-import Login from './components/Login.vue';
-import Album from './components/Album.vue';
-
+import Login from './components/Login.vue'
+import Cadastro from './components/Cadastro.vue'
+import Home from './components/Home.vue'
 
 export const routes = [
-    { path: '', name: 'Login', component: Login, titulo: 'Login', menu: true},
-    { path: '/album', name: 'Album', component: Album, titulo: 'Album', menu: true},
-];
+  { path: '/', name: 'login', component: Login },
+  { path: '/cadastro', name: 'cadastro', component: Cadastro },
+  { path: '/home', name: 'home', component: Home },
+]
