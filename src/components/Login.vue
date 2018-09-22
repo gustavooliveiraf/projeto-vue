@@ -29,6 +29,10 @@
 import User from '../domain/user/User';
 
 export default {
+
+  components: {
+  },
+  
   data() {
     return {
       user: new User()

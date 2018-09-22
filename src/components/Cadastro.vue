@@ -1,6 +1,5 @@
 <template>
   <div class="body">
-    <NavBar></NavBar>
     <h1>Cadastro</h1>
     <form @submit.prevent="grava()" class="form-cadastro">
       <div class="form-group">
@@ -31,14 +30,12 @@
 </template>
 
 <script>
-import NavBar from './NavBar/NavBar.vue'
 import User from '../domain/user/User';
 
 export default {
   name: 'Cadastro',
 
   components: {
-    NavBar
   },
 
   data() {

@@ -1,15 +1,13 @@
 <template>
   <div class="body">
-    <NavBar></NavBar> 
+    <p> Logado... </p>
   </div>
 </template>
 
 <script>
-import NavBar from './NavBar/NavBar.vue'
 
 export default {
   components: {
-    NavBar
   }  
 }
 </script>

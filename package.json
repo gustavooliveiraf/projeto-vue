@@ -1,13 +1,13 @@
 {
-  "name": "chatbot-client-frontend",
+  "name": "frontend",
   "description": "A Vue.js project",
   "version": "1.0.0",
   "author": "gustavo.oliveira <gustavo.oliveira@consensotec.com.br>",
   "license": "MIT",
   "private": true,
   "scripts": {
-    "start": "cross-env NODE_ENV=development webpack-dev-server --open --hot",
-    "build": "cross-env NODE_ENV=production webpack --progress --hide-modules"
+    "dev": "cross-env NODE_ENV=development webpack-dev-server --open --hot --host 0.0.0.0",
+    "start": "cross-env NODE_ENV=production webpack --progress --hide-modules"
   },
   "dependencies": {
     "bootstrap": "^4.1.3",
