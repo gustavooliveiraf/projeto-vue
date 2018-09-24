@@ -1,31 +1,29 @@
 <template>
   <div class="body">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <h1>Cadastro</h1>
-    <form @submit.prevent="grava()" class="form-cadastro">
-      <div class="form-group">
-        <label for="name">Nome Completo</label>
-        <input type="text" class="form-control" id="name" aria-describedby="emailHelp" placeholder="João da Silva" required>
-        <p> {{ check.name }} </p>
+    <form @submit.prevent="grava()" class="form-horizontal form-cadastro">
+      <div class="form-group has-success has-feedback">
+        <input type="text" class="form-control" id="name" aria-describedby="emailHelp" placeholder="Nome" required data-container="body" data-toggle="popover" data-placement="right" data-content="Vivamus sagittis lacus vel augue laoreet rutrum faucibus.">
+        <p></p>
       </div>
-      <div class="form-group">
-        <label for="email">Email</label>
-        <input v-model="user.email" type="email" v-on:input="validate('email')" class="form-control" id="email" aria-describedby="emailHelp" placeholder="joaosilva@exemplo.com" required>
-        <small id="emailHelp" class="form-text text-muted">Não enviaremos propaganda para seu email.</small>
-        <p> {{ check.email }} </p>
+      <div class="form-group has-feedback" :class="validateFigure">
+          <input v-model="user.email" type="email" v-on:input="validate('email')" class="form-control" id="email" aria-describedby="emailHelp" placeholder="E-mail" required>
+          <p> {{ check.email }} </p>
+          <span class="glyphicon glyphicon-ok form-control-feedback"></span>
       </div>
-      <div class="form-group">
-        <label for="user">Usuário</label>
-        <input v-model="user.user" type="text" v-on:input="validate('user')" class="form-control" id="user" aria-describedby="emailHelp" placeholder="João" required>
-        <p> {{ check.user }} </p>
+      <div class="form-group has-feedback" :class="validateFigure">
+          <input v-model="user.user" type="text" v-on:input="validate('user')" class="form-control" id="user" aria-describedby="emailHelp" placeholder="Usuário" required>
+          <p> {{ check.user }} </p>
+          <span class="glyphicon glyphicon-ok form-control-feedback"></span>
       </div>
-      <div class="form-group">
-        <label for="password">Senha</label>
-        <input v-model="user.password" type="password" class="form-control" id="password" placeholder="Senha" required>
-        <small id="emailHelp" class="form-text  text-muted">Não compartilhe sua senha.</small>
+      <div class="form-group has-success has-feedback">
+          <input v-model="user.password" type="password" class="form-control" id="password" placeholder="Senha" required>
       </div>
-      <button type="submit" class="btn btn-primary">Submit</button>
+      <div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </div>
     </form>
-    
   </div>
 </template>
 
@@ -41,7 +39,8 @@ export default {
   data() {
     return {
       user: new User(),
-      check: new User()
+      check: new User(),
+      flag: undefined
     }
   },
 
@@ -62,15 +61,27 @@ export default {
       .then(res => res.json())
       .then(check => {
         if(check && check.check != false) {
+          this.flag = false
           this.check[name] = `${name.charAt(0).toUpperCase() + name.slice(1)} já existe.`
           if(name == 'user') this.check[name] = 'Usuário já existe.' + ` Sugestão: ${
             this.user.user + Math.floor(Math.random() * Math.floor(10)) + Math.floor(Math.random() * Math.floor(10))
           }`
         }
-        else if(check.check == false) this.check[name] = 'Nome válido.'
+        else if(check.check == false) {
+          this.check[name] = 'Nome válido.'
+          flag = true;
+        }
       });
     }
-  }
+  },
+
+  computed: {
+
+    validateFigure() {
+        if(this.flag) return 'has-success';
+        else  return 'has-error';
+    }
+}
   
 }
 </script>
