@@ -205,8 +205,7 @@ export default {
   .form-cadastro2 {
     width: 100%;
     max-width: 330px;
-    padding: 5px;
-    margin: auto;
+    margin: 10px auto;
     text-align: center;
   }
   .form-cadastro input[type="email"] {
@@ -229,6 +228,7 @@ export default {
   .check-i {
     background-color: white;
     border-left: none;
+    border-radius: 0 4px 4px 0!important;
     /* border: 0; */
   }
   .check-input  {
@@ -237,8 +237,8 @@ export default {
  .check-input:focus {
     border: 1px solid #ced4da;
     border-right: none !important;
-    box-shadow: 0 !important;
-    border-radius: 4px !important;
+    box-shadow: none !important;
+    border-radius: 4px 0 0 4px !important;
   }
   .divv-control {
     color: #495057;
@@ -246,7 +246,10 @@ export default {
     border-color: #80bdff;
     outline: 0;
     box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
-    padding: 0;
+    /*padding: 0;*/
     border-radius: 4px
+  }
+  .divv-control input, .divv-control .check-i{
+    border-color: #80bdff!important;
   }
 </style>
