@@ -78,9 +78,7 @@ export default {
 
   methods: {
     grava() {
-      console.log(user)
       if (true) {
-        console.log('passou aquiiiiiiiiiiiiii')
         this.$http.post('users', {
           'name': this.user.name,
           'user': this.user.user,
