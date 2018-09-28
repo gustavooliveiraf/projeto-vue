@@ -1,108 +1,196 @@
 <template>
   <div class="body">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <NavBar></NavBar>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <h1>Cadastro</h1>
-    <form @submit.prevent="grava()" class="form-horizontal form-cadastro">
-      <div class="form-group has-success has-feedback">
-        <input v-model="user.name" type="text" class="form-control" id="name" aria-describedby="emailHelp" placeholder="Nome" required data-container="body" data-toggle="popover" data-placement="right" data-content="Vivamus sagittis lacus vel augue laoreet rutrum faucibus.">
-        <p> {{ user.name }} </p>
+    <form @submit.prevent="grava()" class="form-cadastro">
+      <div class="input-group form-cadastro2">
+        <input @input="user.name = $event.target.value" type="text" class="form-control" id="name" aria-describedby="emailHelp" placeholder="Nome Completo">
       </div>
-      <div class="form-group has-feedback" :class="classe">
-          <meu-input @interface="user.user = $event" @ativaFuncao="validate('user')"/>
-          <!-- <input @input="user.user = $event.target.value, validate('user')" type="text" class="form-control" id="user" aria-describedby="emailHelp" placeholder="Usuário"> -->
-          <p> {{ user.user }} </p>
-          <span class="glyphicon glyphicon-ok form-control-feedback"></span>
+
+<!-- o proximo div eh o que testa -->
+
+      <div class="input-group form-cadastro2" :class="inputActiveUser">
+        <input class="form-control check-input" @input="user.user = $event.target.value" @focus="inputActives(true, 'user')" @blur="inputActives(false, 'user')" type="text" v-on:input="checkField('user')" id="user"placeholder="Usuário">
+        <div class="input-group-prepend ">
+            <i class="input-group-text material-icons check-button check-i" :class="'error'">
+              check_circle
+            </i>
+          </span>
+        </div>
       </div>
-      <div class="form-group has-feedback" :class="validateFigure()">
-          <input v-model="user.email" type="email" v-on:input="validate('email')" class="form-control" id="email" aria-describedby="emailHelp" placeholder="E-mail" required>
-          <p> {{ user.email }} </p>
-          <span class="glyphicon glyphicon-ok form-control-feedback"></span>
+
+      <div class="input-group form-cadastro2" :class="inputActiveEmail">
+        <input class="form-control check-input" @input="user.user = $event.target.value" @focus="inputActives(true, 'email')" @blur="inputActives(false, 'email')" type="text" v-on:input="checkField('user')" id="user"placeholder="E-mail">
+        <div class="input-group-prepend ">
+            <i class="input-group-text material-icons check-button check-i" :class="'sucess'">
+              check_circle
+            </i>
+          </span>
+        </div>
       </div>
-      <div class="form-group has-feedback" :class="validateFigure()">
-          <input v-model="user.company" type="text" v-on:input="validate('company')" class="form-control" id="user" aria-describedby="emailHelp" placeholder="Company" required>
-          <p> {{ user.company }} </p>
-          <span class="glyphicon glyphicon-ok form-control-feedback"></span>
+      
+      <div class="input-group form-cadastro2">
+        <input @input="user.password = $event.target.value" type="password" class="form-control mb-0" id="password" placeholder="Senha">
       </div>
-      <div class="form-group has-success has-feedback">
-          <input v-model="user.password" type="password" class="form-control" id="password" placeholder="Senha" required>
-          <p> {{ user.password }} </p>
+
+      <div class="input-group form-cadastro2">
+        <input @input="passwordConfirmation = $event.target.value" type="password" class="form-control" id="password" placeholder="Confirmar Senha">
       </div>
-      <div>
-        <button type="submit" class="btn btn-primary">Submit</button>
-      </div>
+      
+      <button type="submit" class="btn btn-primary">Cadastrar</button>
     </form>
+    
   </div>
 </template>
 
 <script>
 import User from '../domain/user/User';
-import Input from './Input';
 
 export default {
   name: 'Cadastro',
-
   components: {
-    'meu-input': Input
   },
-
   data() {
     return {
       user: new User(),
       check: new User(),
-      flag: false,
-      pai: 'teste',
-      classe: 'has-error'
+      classes: new User(),
+      classe: 'error',
+      passwordConfirmation: '',
+      inputActiveUser: '',
+      inputActiveEmail: ''
     }
   },
 
   methods: {
     grava() {
-      // if (this.validate()) {
-        this.$http.post('users', {'name': this.user.name, 'email': this.user.email, 'company': this.user.company, 'user': this.user.user, 'password': this.user.password})
+      if (this.validate()) {
+        this.$http.post('users', {
+          'name': this.user.name,
+          'user': this.user.user,
+          'email': this.user.email,
+          'company': this.user.company,
+          'password': this.user.password
+        })
         .then(res => res.json())
         .then(check => {
           if(check[1] == true) this.$router.push({ name: 'home' });
           else if(check[1] == false) {
-            alert("Mude os campos que já existem.");
+            this.validate(true);
           }
         });
-      // }
+      }
     },
 
-    validate(name) {
-      this.$http.get(`users/validation?name=${name}&value=${this.user[name]}`)
+    checkField(field_name) {
+      this.$http.get(`users/validation?name=${field_name}&value=${this.user[field_name]}`)
       .then(res => res.json())
       .then(check => {
-        console.log(check.check)
         if(check && check.check != false) {
-          this.flag = false
-          this.classe = 'has-error'
-          this.check[name] = `${name.charAt(0).toUpperCase() + name.slice(1)} já existe.`
-          if(name == 'user') this.check[name] = 'Usuário já existe.' + ` Sugestão: ${
-            this.user.user + Math.floor(Math.random() * Math.floor(10)) + Math.floor(Math.random() * Math.floor(10))
-          }`
+          this.check[field_name] = `${field_name.charAt(0).toUpperCase() + field_name.slice(1)} já existe.`
+          if(field_name == 'user') {
+            this.check['user'] = 'Usuário já existe.' + ` Sugestão: ${
+              this.user.user + Math.floor(Math.random() * Math.floor(10)) + Math.floor(Math.random() * Math.floor(10))
+            }`
+            this.classe = 'error'
+          }
+          else if(field_name == 'email') {
+            this.check[field_name] = 'E-mail já existe.'
+            this.classe.email = 'error'
+          }
         }
-        else if(check && check.check == false && this.user.user) {
-          this.check[name] = 'Nome válido.'
-          this.flag = true;
-          this.classe = 'has-success'
+
+        else if(check.check == false) {
+          if(field_name == 'user') {
+            this.check[field_name] = `Usuário válido.`
+            this.classe.user = 'sucess'
+          }
+          if(field_name == 'email') {
+            this.check[field_name] = `E-mail válido.`
+            this.classe.user = 'sucess'
+          }
         }
-        //  console.log(this.user.user)
-         console.log(this.classe)
-      })
-      .catch(error => {
-        console.log(error);
-        this.classe = 'has-error';
-      })
+      });
     },
 
-    validateFigure() {
-        if(this.flag) return 'has-success';
-        else return 'has-error';
-    }
-  },
+    inputActives(booleano, name) {
+      if(booleano == true) {
+        if (name == 'user') this.inputActiveUser = 'divv-control'
+        else this.inputActiveEmail = 'divv-control'
+      }
+      else {
+        if (name == 'user') this.inputActiveUser = ''
+        else this.inputActiveEmail = ''
+      }
+    },
 
-  computed: {
+    validate (cadastrar=false) {
+      if (cadastrar == true) {
+        this.$notify({
+            group: 'Warn',
+            title: 'Alerta!',
+            type: 'warn',
+            text: 'Mude os campos que já existem.'
+          });
+        return false;
+      }
+      if (this.user.name === "") {
+        this.$notify({
+            group: 'Warn',
+            title: 'Alerta!',
+            type: 'warn',
+            text: 'O campo nome não pode ficar vazio.'
+          });
+        return false;
+      }
+      if (this.user.email === "") {
+        this.$notify({
+            group: 'Warn',
+            title: 'Alerta!',
+            type: 'warn',
+            text: 'O campo email não pode ficar vazio.'
+          });
+        return false;
+      }
+      if (!(/^[a-z0-9.]+@[a-z0-9]+\.[a-z]/.test(this.user.email))) {
+        this.$notify({
+            group: 'Warn',
+            title: 'Alerta!',
+            type: 'warn',
+            text: 'Endereço de email inválido.'
+          });
+        return false;
+      }
+      if (this.user.password === "") {
+        this.$notify({
+          group: 'Warn',
+          title: 'Alerta!',
+          type: 'warn',
+          text: 'O campo senha não pode ficar vazio.'
+        });
+        return false;
+      }
+      if (this.user.password !== this.passwordConfirmation) {
+        this.$notify({
+          group: 'Error',
+          title: 'Alerta!',
+          type: 'warn',
+          text: 'As senhas informadas não correspondem.'
+        });
+        return false;
+      }
+      if (this.user.company == '') {
+        this.$notify({
+          group: 'Error',
+          title: 'Alerta!',
+          type: 'warn',
+          text: 'O campo Empresa não pode ficar vazio.'
+        });
+        return false;
+      }
+      return true;
+      }
   }
   
 }
@@ -114,26 +202,12 @@ export default {
     width: 100%;
     text-align: center;
   }
-  .form-cadastro {
+  .form-cadastro2 {
     width: 100%;
     max-width: 330px;
-    padding: 15px;
+    padding: 5px;
     margin: auto;
     text-align: center;
-  }
-  .form-cadastro .checkbox {
-    font-weight: 400;
-    text-align: left;
-  }
-  .form-cadastro .form-control {
-    position: relative;
-    box-sizing: border-box;
-    height: auto;
-    padding: 10px;
-    font-size: 16px;
-  }
-  .form-cadastro .form-control:focus {
-    z-index: 2;
   }
   .form-cadastro input[type="email"] {
     margin-bottom: -1px;
@@ -144,5 +218,35 @@ export default {
     margin-bottom: 10px;
     border-top-left-radius: 0;
     border-top-right-radius: 0;
+  }
+  .sucess {
+    color: green;
+  }
+  .error {
+    color: red;
+    
+  }
+  .check-i {
+    background-color: white;
+    border-left: none;
+    /* border: 0; */
+  }
+  .check-input  {
+    border-right: none !important;
+   }
+ .check-input:focus {
+    border: 1px solid #ced4da;
+    border-right: none !important;
+    box-shadow: 0 !important;
+    border-radius: 4px !important;
+  }
+  .divv-control {
+    color: #495057;
+    background-color: #fff;
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+    padding: 0;
+    border-radius: 4px
   }
 </style>
