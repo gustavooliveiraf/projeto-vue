@@ -387,4 +387,7 @@ export default {
   .arrow {
     border-right-color: #cea0a5 !important;
   }
+  .bs-popover-auto[x-placement^="bottom"] .arrow::after, .bs-popover-bottom .arrow::after{
+    border-bottom-color: #ffdce0 !important;
+  }
 </style>
