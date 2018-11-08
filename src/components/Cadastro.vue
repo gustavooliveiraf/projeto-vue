@@ -12,7 +12,7 @@
 
       <div class="input-group form-cadastro2" :class="inputActiveUser">
         <input 
-          data-placement="bottom" data-toggle="popoverUser" data-trigger="focus" data-content="Usuário já existe."
+          data-placement="bottom" data-toggle="popoverUser" data-trigger="focus" data-html="true" data-content="Usuário <span>user.user</span> já existe."
           class="form-control" :class="checkInputUser" @input="user.user = $event.target.value" @focus="inputActives(true, 'user')" @blur="inputActives(false, 'user')" type="text" v-on:input="checkField('user')" id="user"placeholder="Usuário" required
         >
         <div class="input-group-prepend ">
@@ -386,7 +386,17 @@ export default {
   }
   .arrow {
     border-right-color: #cea0a5 !important;
+    left:  7px!important;
   }
+  
+  .popover-body{
+    color: #cea0a5;
+  }
+
+  .popover-body span{
+    font-weight: bold;
+  }
+
   .bs-popover-auto[x-placement^="bottom"] .arrow::after, .bs-popover-bottom .arrow::after{
     border-bottom-color: #ffdce0 !important;
   }
