@@ -26,7 +26,7 @@
 
 <script>
 
-import User from '../domain/user/User';
+import User from '../domain/User';
 
 export default {
 
