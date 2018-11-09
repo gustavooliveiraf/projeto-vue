@@ -1,8 +1,6 @@
 <template>
   <div class="body">
-      <input v-model="search">
-    {{ teste2 }}
-    {{ teste3 }}
+
     <h1>Cadastro</h1>
     <form @submit.prevent="register()" class="form-cadastro">
 
@@ -12,8 +10,8 @@
 
       <div class="input-group form-cadastro2" :class="inputActiveUser">
         <input 
-          data-placement="bottom" data-toggle="popoverUser" data-trigger="focus" data-html="true" data-content="Usuário <span>user.user</span> já existe."
-          class="form-control" :class="checkInputUser" @input="user.user = $event.target.value" @focus="inputActives(true, 'user')" @blur="inputActives(false, 'user')" type="text" v-on:input="checkField('user')" id="user"placeholder="Usuário" required
+          autocomplete="off" data-placement="bottom" data-toggle="popoverUser" data-trigger="focus" data-html="true" :data-content="'Usuário ' + '<span>' + user.user + '</span>' + ' já existe.'"
+          class="form-control" :class="checkInputUser" @input="user.user = $event.target.value" @focus="inputActives(true, 'user')" @blur="inputActives(false, 'user')" type="text" id="user"placeholder="Usuário" required
         >
         <div class="input-group-prepend ">
             <i v-show="checkInputUser" class="input-group-text material-icons check-button check-i" :class="check.user">
@@ -24,8 +22,8 @@
 
       <div class="input-group form-cadastro2" :class="inputActiveEmail">
         <input 
-          data-placement="bottom" data-toggle="popoverEmail" data-trigger="focus" data-content="E-mail incorreto ou já existe."
-          class="form-control" :class="checkInputEmail" @input="user.email = $event.target.value" @focus="inputActives(true, 'email')" @blur="inputActives(false, 'email')" type="text" v-on:input="checkField('email')" id="user"placeholder="E-mail" required
+          autocomplete="off" data-placement="bottom" data-toggle="popoverEmail" data-trigger="focus" data-content="E-mail incorreto ou já existe."
+          class="form-control" :class="checkInputEmail" @input="user.email = $event.target.value" @focus="inputActives(true, 'email')" @blur="inputActives(false, 'email')" type="text" id="user"placeholder="E-mail" required
         >
         <div class="input-group-prepend ">
             <i v-show="checkInputEmail" class="input-group-text material-icons check-button check-i" :class="check.email">
@@ -63,11 +61,10 @@
 
 <script>
 import $ from 'jquery';
-// import store from '../store.js'
 import User from '../domain/User';
 
 import { Observable } from 'rxjs';
-import { pluck, filter, debounceTime, distinctUntilChanged, switchMap, map } from 'rxjs/operators'
+import { pluck, empty, filter, debounceTime, distinctUntilChanged, switchMap, map } from 'rxjs/operators'
 
 export default {
   name: 'Cadastro',
@@ -76,8 +73,8 @@ export default {
   },
 
   mounted: () => {
-    $('[data-toggle="popoverEmail"]').popover()
     $('[data-toggle="popoverUser"]').popover()
+    $('[data-toggle="popoverEmail"]').popover()
   },
   
   data() {
@@ -91,10 +88,7 @@ export default {
       checkInputEmail: '',
       iconUser: '',
       iconEmail: '',
-      is_admin : null,
-      search: '',
-      teste2: '',
-      teste3: ''
+      is_admin : null
     }
   },
 
@@ -102,36 +96,38 @@ export default {
     return {
       results: this.$watchAsObservable('user.user').pipe(
         pluck('newValue'),
-        filter(text => text.length > 2),
-        debounceTime(500), // 1 segundo!
+        debounceTime(300),
         distinctUntilChanged(),
         switchMap(value => {
-          console.log(value)
-          this.teste2 = value
-          return value
-        }),
-        // map(res => {
-        //   console.log(res)
-        //   console.log(typeof(res))
-        //   return res
-        // })
+          if(value.length > 0) {
+            this.check.user = 'hourglass_empty'
+            setTimeout( () => {
+                this.checkField('user')
+            }, 300);
+            return value
+          } else {
+            $('[data-toggle="popoverUser"]').popover('hide')
+            return 'null'
+          }
+        })
       ),
 
       results2: this.$watchAsObservable('user.email').pipe(
         pluck('newValue'),
-        filter(text => text.length > 2),
-        debounceTime(500), // 1 segundo!
+        debounceTime(300),
         distinctUntilChanged(),
         switchMap(value => {
-          console.log(value)
-          this.teste3 = value
-          return value
-        }),
-        // map(res => {
-        //   console.log(res)
-        //   console.log(typeof(res))
-        //   return res
-        // })
+          if(value.length > 0) {
+            this.check.email = 'hourglass_empty'
+            setTimeout( () => {
+                this.checkField('email')
+            }, 300);
+            return value
+          }else {
+            $('[data-toggle="popoverEmail"]').popover('hide')
+            return 'null'
+          }
+        })
       ),
     }
   },
@@ -166,8 +162,8 @@ export default {
 
     checkField(field_name) {
       this.checkInput()
-      if (field_name == 'email' && !(/^[a-z0-9.]+@[a-z0-9]+\.[a-z]/.test(this.user.email))) {
-        this.check.email = 'cancel'
+      if (field_name == 'email' && !(/^[a-z0-9-_.]+@[a-z0-9]+\.[a-z]/.test(this.user.email))) {
+        this.check.email = 'report_problem'
         $('[data-toggle="popoverEmail"]').popover('show')
       }
       else {
@@ -177,11 +173,11 @@ export default {
           if(check && check.check != false) {
             if(field_name == 'user') {
               $('[data-toggle="popoverUser"]').popover('show')
-              this.check.user = 'cancel'
+              this.check.user = 'report_problem'
             }
             else if(field_name == 'email') {
               $('[data-toggle="popoverEmail"]').popover('show')
-              this.check.email = 'cancel'
+              this.check.email = 'report_problem'
             }
           }
 
@@ -248,7 +244,7 @@ export default {
           });
         return false;
       }
-      if (this.check.user == "cancel") {
+      if (this.check.user == "report_problem") {
         this.$notify({
             group: 'Warn',
             title: 'Alerta!',
@@ -258,7 +254,7 @@ export default {
         return false;
       }
 
-      if (this.check.email == "cancel") {
+      if (this.check.email == "report_problem") {
         this.$notify({
             group: 'Warn',
             title: 'Alerta!',
@@ -276,7 +272,7 @@ export default {
           });
         return false;
       }
-      if (!(/^[a-z0-9.]+@[a-z0-9]+\.[a-z]/.test(this.user.email))) {
+      if (!(/^[a-z0-9-_.]+@[a-z0-9]+\.[a-z]/.test(this.user.email))) {
         this.$notify({
             group: 'Warn',
             title: 'Alerta!',
@@ -332,7 +328,7 @@ export default {
   }
   .form-cadastro2 {
     width: 100%;
-    max-width: 330px;
+    max-width: 300px;
     margin: 10px auto;
     text-align: center;
   }
@@ -342,17 +338,23 @@ export default {
   .check_circle {
     color: green;
   }
-  .cancel {
-    color: red;    
+  .report_problem {
+    color: #86181d;
   }
   .check-i {
     background-color: white;
     border-left: none;
     border-radius: 0 4px 4px 0!important;
   }
+  .material-icons {
+
+  }
   .check-input  {
     border-right: none !important;
-   }
+  }
+  .popover {
+    transform: translate3d(0px, 400, 0px) !important;
+  }
  .check-input:focus {
     border: 1px solid #ced4da;
     border-right: none !important;
@@ -374,6 +376,7 @@ export default {
     background-color: #ffdce0;
     color: #cea0a5;
     border-color: #cea0a5;
+    left: -25px !important;
   }
   .popover-content {
     background-color: #cea0a5 !important;
@@ -388,16 +391,13 @@ export default {
     border-right-color: #cea0a5 !important;
     left:  7px!important;
   }
-  
-  .popover-body{
-    color: #cea0a5;
-  }
-
-  .popover-body span{
-    font-weight: bold;
-  }
-
   .bs-popover-auto[x-placement^="bottom"] .arrow::after, .bs-popover-bottom .arrow::after{
     border-bottom-color: #ffdce0 !important;
+  }
+  .popover-body{
+    color: #86181d;
+  }
+  .popover-body span{
+    font-weight: bold;
   }
 </style>
